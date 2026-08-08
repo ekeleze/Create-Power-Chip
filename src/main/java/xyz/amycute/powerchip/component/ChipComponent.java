@@ -44,8 +44,6 @@ public class ChipComponent extends OrientableComponent implements IRenderedCompo
 {
     public static final int[] SIZES = new int[]{ 4, 6, 8, 10, 12, 14, 16, 20, 24 };
     public static final int GLOBAL_MAX_IO = SIZES[SIZES.length - 1];
-    public static final int MAX_CHIP_DEPTH = 5;
-    public static final float MAX_POWER_PER_PIN = 250f;
     public static final SchematicProperty SCHEMATIC = new SchematicProperty(PowerChips.MOD_ID, "chip_schematic");
 
     private final int pinCount;
@@ -115,7 +113,6 @@ public class ChipComponent extends OrientableComponent implements IRenderedCompo
 
     private static int getChipDepth(CompoundTag schematicTag, int currentDepth)
     {
-        if (currentDepth >= MAX_CHIP_DEPTH) return currentDepth;
         if (schematicTag == null || schematicTag.isEmpty()) return currentDepth;
 
         CircuitSchematic schematic = CircuitSchematic.fromNbt(schematicTag);
@@ -134,14 +131,8 @@ public class ChipComponent extends OrientableComponent implements IRenderedCompo
             int depth = getChipDepth(innerSchematic, currentDepth + 1);
 
             if (depth > maxDepth) maxDepth = depth;
-            if (maxDepth >= MAX_CHIP_DEPTH) break;
         }
         return maxDepth;
-    }
-
-    public static boolean exceedsMaxDepth(CompoundTag schematicTag)
-    {
-        return getChipDepth(schematicTag) >= MAX_CHIP_DEPTH;
     }
 
     public static float totalDissipatedPower(CompoundTag schematicTag)
@@ -177,11 +168,6 @@ public class ChipComponent extends OrientableComponent implements IRenderedCompo
             total += dissipationFactor * (overheatTemperature - ThermalBehaviour.BASE_TEMPERATURE);
         }
         return total;
-    }
-
-    public static boolean exceedsMaxPower(CompoundTag schematicTag, int pinCount)
-    {
-        return totalDissipatedPower(schematicTag) > MAX_POWER_PER_PIN * pinCount;
     }
 
     @Override

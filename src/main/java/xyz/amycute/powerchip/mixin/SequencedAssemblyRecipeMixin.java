@@ -43,10 +43,6 @@ public abstract class SequencedAssemblyRecipeMixin
 
         CompoundTag schematicTag = inputTag.getCompound(ModNbt.NBT_SCHEMATIC).copy();
 
-        CompoundTag outTag = result.has(DataComponents.CUSTOM_DATA) ? result.get(DataComponents.CUSTOM_DATA).copyTag() : new CompoundTag();
-        outTag.put(ModNbt.NBT_SCHEMATIC, schematicTag.copy());
-        result.set(DataComponents.CUSTOM_DATA, CustomData.of(outTag));
-        
         if (isFinalChip)
         {
             int size = ChipComponent.designatedSize(schematicTag);
@@ -65,6 +61,10 @@ public abstract class SequencedAssemblyRecipeMixin
             loreLines.add(Component.literal(size + " Pins").withStyle(ChatFormatting.DARK_GRAY));
             result.set(DataComponents.LORE, new ItemLore(loreLines));
         }
+
+        CompoundTag outTag = result.has(DataComponents.CUSTOM_DATA) ? result.get(DataComponents.CUSTOM_DATA).copyTag() : new CompoundTag();
+        outTag.put(ModNbt.NBT_SCHEMATIC, schematicTag.copy());
+        result.set(DataComponents.CUSTOM_DATA, CustomData.of(outTag));
 
         cir.setReturnValue(result);
     }
