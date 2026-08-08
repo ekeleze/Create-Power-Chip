@@ -43,36 +43,21 @@ public abstract class SequencedAssemblyRecipeMixin
 
         CompoundTag schematicTag = inputTag.getCompound(ModNbt.NBT_SCHEMATIC).copy();
 
-        if (isFinalChip && ChipComponent.exceedsMaxDepth(schematicTag))
-        {
-            forceIncomplete(schematicTag, cir);
-            return;
-        }
-
-        int size = -1;
+        CompoundTag outTag = result.has(DataComponents.CUSTOM_DATA) ? result.get(DataComponents.CUSTOM_DATA).copyTag() : new CompoundTag();
+        outTag.put(ModNbt.NBT_SCHEMATIC, schematicTag.copy());
+        result.set(DataComponents.CUSTOM_DATA, CustomData.of(outTag));
+        
         if (isFinalChip)
         {
-            size = ChipComponent.designatedSize(schematicTag);
+            int size = ChipComponent.designatedSize(schematicTag);
             if (size < 0)
             {
                 forceIncomplete(schematicTag, cir);
                 return;
             }
 
-            if (ChipComponent.exceedsMaxPower(schematicTag, size))
-            {
-                forceIncomplete(schematicTag, cir);
-                return;
-            }
-
             result = new ItemStack(ModItems.chip(size));
-        }
 
-        CompoundTag outTag = result.has(DataComponents.CUSTOM_DATA) ? result.get(DataComponents.CUSTOM_DATA).copyTag() : new CompoundTag();
-        outTag.put(ModNbt.NBT_SCHEMATIC, schematicTag.copy());
-        result.set(DataComponents.CUSTOM_DATA, CustomData.of(outTag));
-        if (isFinalChip)
-        {
             String chipName = findChipName(schematicTag);
             result.set(DataComponents.CUSTOM_NAME, Component.literal(chipName != null ? chipName : "CHIP"));
 
